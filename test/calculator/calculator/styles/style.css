@@ -4,14 +4,22 @@ body{
 	font-family: Helvetica;
 	font-weight: lighter;
 }
+html, body{
+    max-width: 100%;
+    /*overflow-x: hidden;*/
+    height: 100%;
+}
+html{
+	width: 100vw;
+}
 #result-div{
 	background-image: linear-gradient(rgb(0,0,0),rgb(10,10,10));
 	padding: 1vw;
 	text-align: center;
 	border-radius: 1vw 1vw 0 0;
 }
-#result{
-	width: 60vw;
+#result,#sum{
+	width: 100vw;
 	height: 6vh;
 	font-size: 6vh;
 	margin-bottom: 1vh;
@@ -77,16 +85,15 @@ input,button{
 	display: inline-block;
 	text-align: center;
 	font-size: 2vw;
+	margin-top: .5vw;
 }
 #input-result{
 	text-align:center;
 }
 #result p{
-	height: 5vh;
-	font-size: 4vh;
 	text-align: center;
-	line-height: 50px;
-	width: 50vw;
-	position: relative;
-	left: 25vw;
+	margin: 0;
+}
+#sum{
+	width: 90vw;
 }

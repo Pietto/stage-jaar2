@@ -35,3 +35,75 @@ body {
     padding: 0;
 }
 
+
+
+
+/*the log in the top-left of your screen*/
+.log {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    height: 150px;
+    width: 250px;
+    overflow: scroll;
+    background: white;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 12px;
+    font-family: Arial Nova Light, arial;
+}
+.log-entry {
+    padding: 5px;
+    border-bottom: 1px solid #d0d9e9;
+}
+.log-entry:nth-child(odd) {
+    background-color: #e1e7f1;
+}
+
+
+.log {
+    opacity: .5;
+}
+
+
+
+/*styling of the infobubble that opens on click of the marker*/
+
+.H_ib_body{
+    width: auto;
+    opacity: .9;
+    transition: .5s;
+}
+
+.H_ib_content{
+    background-color: blue;
+    border-radius: 5px;
+}
+
+.H_ib_content h1{
+    font-family: sans serif;
+    color: white;
+}
+
+.H_ib_tail{
+    display: none;              /*removes the weird block on the marker when active*/
+}
+
+
+/*changes some of the styling of the dropdown button on the bottom-right of the screen*/
+
+.H_rdo_title{
+    text-align: center;
+}
+.H_btn{ 
+    color: rgb(87, 91, 99);
+    text-align: center;
+}
+.H_active{
+    color: black;
+    background-image: grey;
+}
+.H_rdo_buttons{
+    background: linear-gradient(to right, transparent, 5%, blue, 95%, transparent);
+}

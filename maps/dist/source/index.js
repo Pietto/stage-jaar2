@@ -1,3 +1,6 @@
+//Pieterjan (26/11/2019) dit wordt niet gebruikt op het moment
+
+
 (function () {
 'use strict';
 

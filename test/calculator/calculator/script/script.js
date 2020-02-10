@@ -1,4 +1,4 @@
-var result = document.getElementById('result');
+var result = document.getElementById('sum');
 var input1 = document.getElementById('input1');
 var input2 = document.getElementById('input2');
 var input3 = document.getElementById('input3');
@@ -92,14 +92,14 @@ function AddFactor(fraction)
 	}
 }
 
-
-	// var str = "Amount is 1000";
-	// var num = str.replace(/[0-9.]/g,"");
-	// console.log(num);
-
-	// var test = fraction.replace(':','%');
-	// console.log(test);
 function getSecondResult(line)
 {
     return line.split('=')[1];
 }
+
+/*//check for PHP error message
+var phpError = document.getElementsByTagName('table')[0];
+if(phpError != '' || phpError != null){
+	//hides PHP error message
+	phpError.style.display= 'none';
+}*/

@@ -1,384 +1,260 @@
-(function () {
-'use strict';
+/*
+   the following code has been put together by Pieterjan van Dijk, an internship employee at Jifeline b.v., Sleeuwijk
+   the code has been commented as clearly as possible, if there any questions you can reach out to Pieterjan.v.Dijk@Gmail.com
+   some useful links:
+
+   https://developer.here.com/
+   https://heremaps.github.io/examples/explorer.html
+*/
 
 
-    // /**
-    //  * Creates a new marker and adds it to a group
-    //  * @param {H.map.Group} group       The group holding the new marker
-    //  * @param {H.geo.Point} coordinate  The location of the marker
-    //  * @param {String} html             Data associated with the marker
-    //  */
-    // function addMarkerToGroup(group, coordinate, html) {
-    //     var marker = new H.map.Marker(coordinate);
-    //     // add custom data to the marker
-    //     marker.setData(html);
-    //     group.addObject(marker);
-    // }
-    //
-    // /**
-    //  * Add two markers showing the position of Liverpool and Manchester City football clubs.
-    //  * Clicking on a marker opens an infobubble which holds HTML content related to the marker.
-    //  * @param  {H.Map} map      A HERE Map instance within the application
-    //  */
-    // function addInfoBubble(map) {
-    //     var group = new H.map.Group();
-    //
-    //     map.addObject(group);
-    //
-    //     // add 'tap' event listener, that opens info bubble, to the group
-    //     group.addEventListener('tap', function (evt) {
-    //         // event target is the marker itself, group is a parent event target
-    //         // for all objects that it contains
-    //         var bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-    //             // read custom data
-    //             content: evt.target.getData()
-    //         });
-    //         // show info bubble
-    //         ui.addBubble(bubble);
-    //     }, false);
-    //
-    //      addMarkerToGroup(group, {lat:53.439, lng:-2.221},' Manchester City' +  '  City of Manchester Stadium    Capacity: 48,000    ');
-    //      addMarkerToGroup(group, {lat:53.430, lng:-2.961},'Liverpool' +    '  Anfield     Capacity: 45,362    ');
-    //
-    // }
+//the following code is neccesery for the Here Maps api to properly work, the credentials (app_id & app_code) should be correct, you can acquired via https://developer.here.com/
 
-var app_id = "DemoAppId01082013GAL";
-var app_code = "AJKnXv84fjrb0KIHawS0Tg";
-
-// Initialize communication with the platform, to access your own data, change the values below
-// https://developer.here.com/documentation/geovisualization/topics/getting-credentials.html
-
-// We recommend you use the CIT environment. Find more details on our platforms below
-// https://developer.here.com/documentation/map-tile/common/request-cit-environment-rest.html
-
-const platform = new H.service.Platform({
-    app_id,
-    app_code,
-    useCIT: true,
-    useHTTPS: true
+var platform = new H.service.Platform({
+// app_id: 'devportal-demo-20180625',
+// app_code: '9v2BkviRwi9Ot26kp2IysQ',
+// ↑ given credentials
+// ↓ my credentials
+app_id: 'QlrqwUYhEWf825yeSmpk',
+app_code: 'n5l-JOQ2HOaFfX9YSpPa7Q',
+// api_key: 'piSDNsDTjIP6r4KymSM0sFnwsFWPCAxZDv9u_UKL09Y',
+useHTTPS: true
 });
 
 const pixelRatio = devicePixelRatio > 1 ? 2 : 1;
-let defaultLayers = platform.createDefaultLayers({
-    tileSize: 256 * pixelRatio
-});
-const layers = platform.createDefaultLayers({
-  tileSize: 512 * pixelRatio,
-  ppi: pixelRatio > 1 ? 320 : 72
+var defaultLayers = platform.createDefaultLayers({
+   tileSize: pixelRatio === 1 ? 256 : 512,
+   ppi: pixelRatio === 1 ? undefined : 320
 });
 
-// initialize a map  - not specifying a location will give a whole world view.
-let map = new H.Map(
-    document.getElementsByClassName('dl-map')[0],
-    defaultLayers.satellite.base,
-    {
-        pixelRatio,
-        center: new H.geo.Point(51.51, 10.34),
-        zoom:6
-
-        // Nederland
-        // pixelRatio,
-        // center: new H.geo.Point(51.61, 5.34),
-        // zoom:8
-    },
-    defaultLayers.normal.base,
-    {
-        pixelRatio,
-        center: new H.geo.Point(51.51, 10.34),
-        zoom:6
-    }
-);
-
-// make the map interactive
-const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
-let ui = H.ui.UI.createDefault(map, layers, 'nl-NL');
-//ui.removeControl('mapsettings');
-
-// resize map on window resize
-window.addEventListener('resize', function() {
-    map.getViewPort().resize();
+var map = new H.Map(document.getElementById('map'),
+defaultLayers.normal.map, {
+   pixelRatio,
+   center: new H.geo.Point(51.51, 10.34),
+   zoom: 3
 });
 
+var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+var ui = H.ui.UI.createDefault(map, defaultLayers); 
+var mapSettings= ui.getControl('mapsettings');
+let mapsettings = ui.getControl('mapsettings');
+mapSettings.setIncidentsLayer(false);
+let menuEntries = mapsettings.getChildren()[1].getChildren();
+menuEntries[0].getElement().style.borderBottom = 'none';
+for (i=1; i<menuEntries.length; i++)
+{
+   menuEntries[i].setVisibility(false);
+}
 
-    /***
-     *
-     * HOMEMADE RAYMOND
-     *
-     */
+window.addEventListener('resize', function()
+{
+   map.getViewPort().resize();
+});
 
+//the following code makes an AJAX call to a php file that makes a connection to the database
+//in data_request.php you can change the query to change the callback
+//the ajax call should update the information from the database to the browser everey X seconds
 
-
-
-    // let hoveredObject;
-    // var group = new H.map.Group();
-    //
-    // map.addObject(group);
-    //
-    // // add 'tap' event listener, that opens info bubble, to the group
-    // group.addEventListener('tap', function (evt) {
-    //     // event target is the marker itself, group is a parent event target
-    //     // for all objects that it contains
-    //     var bubble =  new H.ui.InfoBubble(evt.target.getGeometry(), {
-    //         // read custom data
-    //         content: evt.target.getData()
-    //     });
-    //
-    //     bubble.addClass('info-bubble');
-    //     // bubble.setContent(`
-    //     //         <div class="info-bubble-title" style="width:200px;">${facility}</div>
-    //     //         <div class="info-bubble-label">
-    //     //             ${address} <br />
-    //     //             ${SUBahn} <br />
-    //     //             ${periode1} <br />
-    //     //             ${periode2} <br />
-    //     //         </div>`);
-    //     //
-    //     // bubble.setContent(`
-    //     //         <div class="info-bubble-title" style="width:200px;">${facility}</div>
-    //     //         <div class="info-bubble-label">
-    //     //             ${address} <br />
-    //     //             ${SUBahn} <br />
-    //     //             ${periode1} <br />
-    //     //             ${periode2} <br />
-    //     //         </div>`);
-    //
-    //     // show info bubble
-    //
-    //     // if (hoveredObject && hoveredObject !== evt.target) {
-    //     //     bubble.close();
-    //     // }
-    //
-    //     hoveredObject = evt.target;
-    //     if (hoveredObject.icon) {
-    //         let row = hoveredObject.getData();
-    //         if (row) {
-    //             let facility = row[1];
-    //             let address = row[2];
-    //             let SUBahn = row[3];
-    //             let periode1 = row[5];
-    //             let periode2 = row[6];
-    //
-    //             let pos = map.screenToGeo(
-    //                 evt.currentPointer.viewportX,
-    //                 evt.currentPointer.viewportY);
-    //             bubble.setPosition(pos);
-    //             // infoBubble.click(function() {
-    //             //     alert(1);
-    //             // });
-    //
-    //             // hoveredObject.
-    //
-    //             bubble.setContent(`
-    //             <div class="info-bubble-title" style="width:200px;">${facility}</div>
-    //             <div class="info-bubble-label">
-    //                 ${address} <br />
-    //                 ${SUBahn} <br />
-    //                 ${periode1} <br />
-    //                 ${periode2} <br />
-    //             </div>`);
-    //             bubble.open();
-    //         }
-    //     }
-    //
-    //
-    //     ui.addBubble(bubble);
-    // }, false);
-
-    //let hoveredObject;
-    //let infoBubble = new H.ui.InfoBubble({lat: 0, lng: 0}, {});
-    //bubble.addClass('info-bubble');
-    //bubble.close();
-    //ui.addBubble(infoBubble);
-
-    // map.addEventListener('pointermove', (e) => {
-    //     if (hoveredObject && hoveredObject !== e.target) {
-    //         infoBubble.close();
-    //     }
-    //
-    //     hoveredObject = e.target;
-    //     if (hoveredObject.icon) {
-    //         let row = hoveredObject.getData();
-    //         if (row) {
-    //             let facility = row[1];
-    //             let address = row[2];
-    //             let SUBahn = row[3];
-    //             let periode1 = row[5];
-    //             let periode2 = row[6];
-    //
-    //             let pos = map.screenToGeo(
-    //                 e.currentPointer.viewportX,
-    //                 e.currentPointer.viewportY);
-    //             infoBubble.setPosition(pos);
-    //             // infoBubble.click(function() {
-    //             //     alert(1);
-    //             // });
-    //
-    //             // hoveredObject.
-    //
-    //             infoBubble.setContent(`
-    //             <div class="info-bubble-title" style="width:200px;">${facility}</div>
-    //             <div class="info-bubble-label">
-    //                 ${address} <br />
-    //                 ${SUBahn} <br />
-    //                 ${periode1} <br />
-    //                 ${periode2} <br />
-    //             </div>`);
-    //             infoBubble.open();
-    //         }
-    //     }
-    // });
-
-
-    /***
-     *
-     * HOMEMADE RAYMOND
-     *
-     */
-
-// data from the Open Berlin Data
-// https://www.berlin.de/sen/kultur/kulturpolitik/statistik-open-data/orte-geodaten/
-// download link:
-// https://www.berlin.de/sen/kultur/_assets/statistiken/kultureinrichtungen_alle.xlsx
-let provider = new H.datalens.RawDataProvider({
-    //dataUrl: '../../laatste_1000_klanten.csv?' + Date.now(),
-    dataUrl: 'geo_data.csv?' + Date.now(),
-    dataToFeatures: (data) => {
-        let parsed = helpers.parseCSV(data);
-        let features = [];
-        let new_data_array = [];
-        let row = null;
-        let feature = null;
-
-        for (let i = 1, l = parsed.length; i < l; i++) {
-            row = parsed[i];
-            feature = {
-                'type': 'Feature',
-                'geometry': {
-                    'type': 'Point',
-                    'coordinates': [Number(row[3]), Number(row[2])]
-                },
-                'properties': {
-                    'facility': row[0],
-                    'address': row[1],
-                    'SUBahn': row[4],
-                    'type':  row[5],
-                    'periode1':  row[6],
-                    'periode2':  row[7],
-                    'grotebol':  row[8],
-                    'svg':  row[9]
-                }
-            };
-            features.push(feature);
-        }
-        return features;
-    },
-    featuresToRows: (features) => {
-        let rows = [], feature;
-        for (let i = 0, l = features.length; i < l; i++) {
-            feature = features[i];
-            rows.push([{
-                    lat: feature.geometry.coordinates[1],
-                    lng: feature.geometry.coordinates[0]
-                },
-                feature.properties.facility,
-                feature.properties.address,
-                feature.properties.SUBahn,
-                feature.properties.type,
-                feature.properties.periode1,
-                feature.properties.periode2,
-                feature.properties.grotebol,
-                feature.properties.svg
-            ]);
-        }
-        return rows;
-    }
+var request = $.ajax({
+   url: 'dist/source/ajax-request/load-tickets.php',
+   type: 'GET',
+   contentType: 'application/json; charset=utf-8'
 });
 
 
-// optionally - resize a larger PNG image to a specific size
-    //var pngIcon = new H.map.Icon("https://cdn3.iconfinder.com/data/icons/tourism/eiffel200.png", {size: {w: 56, h: 56}});
+//to change the interval with how often the ajax call is being made, change the number at the end of the setInterval() function, this is the amount of milliseconds that it will take for the next call to be made
 
+$(document).ready(function(){
+   setInterval(function(){
+      request.done(function(data) {
+         //to check whether the ajax call is working, the following line will log the ajax result to your console
+         console.log(data);
+         var tickets = data;
+         tickets.forEach(function(ticket){
+            geocode(platform, ticket.postal_code, ticket.country, ticket.street, ticket.brand);
+         });
+      });
 
-let layer = new H.datalens.ObjectLayer(provider, {
-    pixelRatio: window.devicePixelRatio,
-
-    // accepts data row and returns map object
-    rowToMapObject: function (data) {
-        let coordinates = data[0];
-        let facility = data[1];
-
-        //console.log(facility);
-
-        //addMarkerToGroup(group, coordinates,facility);
-
-        return new H.map.Marker(coordinates);
-    },
-
-    rowToStyle: function (data, zoom) {
-        if (!venueIcons[data[4]]) { return }
-        //let icon = H.datalens.ObjectLayer.createIcon(venueIcons[data[4]],
-        //let test1 = venueIcons[data[4]];
-        //let test2 = data[8];
-        //let icon1 = H.datalens.ObjectLayer.createIcon(venueIcons[data[4]],{size: (zoom * data[7])});
-        //let icon = H.datalens.ObjectLayer.createIcon("<svg xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.0\" width=\"400\" height=\"400\" id=\"svg2\"><title>Pie chart</title><desc>Picture of a pie chart</desc><path d=\"M200,200  L390,200  A190,190 0 0,1 345.54844419261,322.12964584044  z\" fill=\"red\" stroke=\"black\" stroke-width=\"2\" fill-opacity=\"0.5\" stroke-linejoin=\"round\"></path><path d=\"M200,200  L345.54844419261,322.12964584044  A190,190 0 1,1 390,200  z\" fill=\"orange\" stroke=\"black\" stroke-width=\"2\" fill-opacity=\"0.5\" stroke-linejoin=\"round\"></path></svg>",
-        let icon = H.datalens.ObjectLayer.createIcon(data[8],
-            //{size: (20 * pixelRatio});
-            // {size: (zoom*3) * (3)});
-            {size: (zoom * data[7])});
-        //{size: (zoom * 20)});
-        return {icon};        //let icon = H.datalens.ObjectLayer.createIcon(venueIcons[data[4]],
-    }
+      //if anything fails, the following function will be activated and will log the problem to your console
+      request.fail(function(jqXHR, textStatus) {
+         console.log(result.status + ' ' + result.statusText);
+      });
+   }, 1500);
 });
 
-// add layer to map
-map.addLayer(layer);
+// jquery ajax call ends here
 
-// show info bubble on hover
-const format = d3.format('.2f');
-let hoveredObject;
-let infoBubble = new H.ui.InfoBubble({lat: 0, lng: 0}, {});
-infoBubble.addClass('info-bubble');
-infoBubble.close();
-ui.addBubble(infoBubble);
 
-map.addEventListener('pointermove', (e) => {
-    if (hoveredObject && hoveredObject !== e.target) {
-        infoBubble.close();
-    }
+//this function is currently not active, if you want clustering in your browser, check the following links:
+// https://developer.here.com/documentation/examples/maps-js/clustering/marker-clustering
+// https://developer.here.com/documentation/examples/maps-js/clustering/custom-cluster-theme
+// https://developer.here.com/documentation/android-premium/dev_guide/topics/marker-clustering.html
 
-    hoveredObject = e.target;
-    if (hoveredObject.icon) {
-        let row = hoveredObject.getData();
-        if (row) {
-            let facility = row[1];
-            let address = row[2];
-            let SUBahn = row[3];
-            let periode1 = row[5];
-            let periode2 = row[6];
+function clustering()
+{
+   // var dataPoints = [];
+   // for(var i=0; i<markerCoordinates.length; i++)
+   // {
+   //    coord = markerCoordinates[i];
+   //    coord = getCoords(coord);
+   //    var coords = coord.split(',');
+   //    var coord1 = coords[0];
+   //    var coord2 = coords[1];
+   //    dataPoints.push(new H.clustering.DataPoint(ticket.longitude, ticket.latitude));
+   // }
+}
 
-            let pos = map.screenToGeo(
-                e.currentPointer.viewportX,
-                e.currentPointer.viewportY);
-            infoBubble.setPosition(pos);
-            // infoBubble.click(function() {
-            //     alert(1);
-            // });
 
-           // hoveredObject.
 
-            infoBubble.setContent(`
-                <div class="info-bubble-title" style="width:300px;font-size: 18px;">${facility}</div>
-                <div class="info-bubble-label" style="font-size: 16px;color: white;">
-                    ${address} <br />
-                    ${SUBahn} <br />
-                    ${periode1} <br />
-                    ${periode2} <br />
-                </div>`);
-            infoBubble.open();
-        }
-    }
+
+//the following text logs the coordinates of the pointer to the box on the top-left of the screen.
+//if you wish to disable this feature you can simply delete/disable the following lines
+// https://heremaps.github.io/examples/explorer.html#geocoordinate-on-click
+
+function setUpClickListener(map) {
+   // Attach an event listener to map display
+   // obtain the coordinates and display in an alert box.
+   map.addEventListener('tap', function (evt) {
+      var coord = map.screenToGeo(evt.currentPointer.viewportX,
+         evt.currentPointer.viewportY);
+      logEvent('Clicked at ' + Math.abs(coord.lat.toFixed(4)) +
+         ((coord.lat > 0) ? 'N' : 'Z') +
+         ' ' + Math.abs(coord.lng.toFixed(4)) +
+         ((coord.lng > 0) ? 'O' : 'W'));
+   });
+}
+
+window.addEventListener('resize', () => map.getViewPort().resize());
+
+//creates log to see coordinates on click
+var logContainer = document.createElement('ul');
+logContainer.className ='log';
+logContainer.innerHTML = 'Try clicking on the map';
+map.getElement().appendChild(logContainer);
+
+// Helper for logging events
+function logEvent(str) {
+   var entry = document.createElement('li');
+   entry.className = 'log-entry';
+   entry.textContent = str;
+   logContainer.insertBefore(entry, logContainer.firstChild);
+}
+setUpClickListener(map);
+
+
+
+
+//the following code uses the variables pulled out of the database (using the country, postal code and street address) and logs them as markers to the map
+
+//using coordinates: https://developer.here.com/documentation/examples/maps-js/markers/markers-on-the-map
+//using addresses: https://developer.here.com/documentation/examples/maps-js/services/geocode-a-location-from-structured-address
+
+
+
+//this functions calls the geocode() function which will handle the implementation of the marker
+//the given parameters are optional, the variable 'platform' should always be given, in this case the other parameters will be used to specify the marker location
+tickets.forEach(function(ticket){
+   geocode(platform, ticket.postal_code, ticket.country, ticket.street, ticket.brand);
 });
 
 
+//if the variables contain the correct information, function onSuccess will be executed, otherwise function onError will be executed
+function geocode(platform, postalCode, postalCountry, streetName, carBrand) {
 
-}());
+   var geocoder = platform.getGeocodingService(),
+   geocodingParameters = {
+      postalcode : postalCode,
+      // housenumber: '999',
+      street: streetName,
+      // city: 'cityName',
+      country: postalCountry,
+      carBrand: carBrand,
+      jsonattributes : 1
+   };
+
+   geocoder.geocode(
+      geocodingParameters,
+      onSuccess,
+      onError
+   );
+}
+
+//if the variables are correct, this function will execute and activate functoin addLocationsToMap(locations);
+
+function onSuccess(result) {
+   if(result.response.view[0]) {
+   var locations = result.response.view[0].result;
+   addLocationsToMap(locations);
+
+   /*
+      * The styling of the geocoding response on the map is entirely under the developer's control.
+      * A representitive styling can be found the full JS + HTML code of this example
+      * in the functions below:
+      */
+      // ... etc.
+   } else {
+      console.log(result);
+      console.log('result not found');
+   }
+}
+
+//if the variables are incorrect or anything fails, this function will be activated
+
+function onError(error) {
+   alert('Can\'t reach the remote server');
+}
+
+//
+
+var locationsContainer = document.getElementById('panel');
+
+//hold a reference to any infobubble opened
+var bubble;
+
+
+//this function makes it possible to open an infobubble when clicked on a marker, in here you can change the content and styling of the bubble
+function openBubble(position, text, id){
+   var bubbleContent = '<h1 id=\'bubbleText\'>' + text + '</h1>';
+   if(!bubble)
+   {
+      bubble =  new H.ui.InfoBubble(
+         position,
+         {content: bubbleContent});
+      ui.addBubble(bubble);
+      /*bubbleStyling();*/
+   }
+   else
+   {
+      bubble.setPosition(position);
+      bubble.setContent(bubbleContent);
+      bubble.open();
+      /*bubbleStyling();*/
+  }
+}
+
+function bubbleStyling(){
+   //specify the bubble styling in here, this can be done using javascript DOM elements.
+   //to see which element you need to call out, go to the browser and use the element inspector to check the id/class names of the element that you want to change
+   //the bubble styling can also be done in the index.css file
+}
+
+
+//this function adds markers to the map if all the above functions executed correctly
+function addLocationsToMap(locations){
+   var group = new H.map.Group(),position,i;
+
+   var icon = new H.map.Icon('dist/source/images/car-f.svg', {size: {w: 64, h: 64}});
+   marker = new H.map.Marker(
+      {lat: locations[0].location.displayPosition.latitude, lng: locations[0].location.displayPosition.longitude}
+      //,{icon: icon}  <-- neccesery if you want to use a custom icon, please note that this will give bad performance when used in large quantities
+      );
+   //the following line specifies what should be in the infobubble
+   marker.label = locations[0].location.address.label;
+   group.addObject(marker);
+   map.addObject(group);   
+
+   group.addEventListener('tap', function (evt){
+      openBubble(
+         evt.target.getGeometry(), evt.target.label, 0);
+   }, false);
+}

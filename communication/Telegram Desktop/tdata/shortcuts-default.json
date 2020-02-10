@@ -5,7 +5,7 @@
 
 [
     {
-        "version": "1008013"
+        "version": "1009009"
     },
     {
         "command": "media_play",
@@ -42,6 +42,10 @@
     {
         "command": "self_chat",
         "keys": "ctrl+0"
+    },
+    {
+        "command": "show_archive",
+        "keys": "ctrl+9"
     },
     {
         "command": "search",

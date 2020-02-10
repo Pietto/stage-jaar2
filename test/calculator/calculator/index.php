@@ -1,6 +1,5 @@
 <?php 
-	include 'include/request.php';
-	include 'include/calculate.php';
+	include 'autoload.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -11,7 +10,7 @@
 <body>
 	<form id='form' method="POST" action="">
 		<div id='result-div'>
-			<input name='result' id='result' type="text" readonly value="">
+			<input name='result' id='sum' type="text" readonly value="">
 		</div>
 		<div id='inline'>
 			<div id='numbers-div'>
